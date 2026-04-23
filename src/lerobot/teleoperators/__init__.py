@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from . import amazing_hand  # noqa: F401
 from . import so101_leader_with_hand  # noqa: F401
 from .config import TeleoperatorConfig
 from .teleoperator import Teleoperator
