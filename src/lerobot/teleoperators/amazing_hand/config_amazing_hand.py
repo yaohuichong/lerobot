@@ -24,9 +24,9 @@ from ..config import TeleoperatorConfig
 @dataclass
 class AmazingHandConfig(TeleoperatorConfig):
     port: str
-    
+
     side: Literal["left", "right"] = "right"
-    
+
     finger_motor_ids: dict[str, list[int]] = field(
         default_factory=lambda: {
             "index": [1, 2],
@@ -35,14 +35,14 @@ class AmazingHandConfig(TeleoperatorConfig):
             "thumb": [7, 8],
         }
     )
-    
+
     middle_positions: list[float] = field(
         default_factory=lambda: [3.0, 0.0, -5.0, -8.0, -2.0, 5.0, -12.0, 0.0]
     )
-    
+
     gripper_motor_id: int = 6
-    
+
     gripper_open_position: float = 0.0
     gripper_close_position: float = -90.0
-    
+
     use_degrees: bool = True

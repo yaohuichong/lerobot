@@ -39,11 +39,11 @@ logger = logging.getLogger(__name__)
 class SO100WithHand(Robot):
     """
     SO-100 Follower Arm with AmazingHand integration.
-    
+
     This robot combines the SO-100 arm with the AmazingHand dexterous hand.
     The gripper on the SO-100 can be synchronized with finger movements
     from the AmazingHand teleoperator.
-    
+
     Features:
     - Standard SO-100 arm control (5 arm joints + gripper)
     - Gripper can be controlled directly or synchronized with finger flex
@@ -65,23 +65,23 @@ class SO100WithHand(Robot):
     def __init__(self, config: SO100WithHandConfig):
         super().__init__(config)
         self.config = config
-        
+
         norm_mode_body = MotorNormMode.DEGREES if config.use_degrees else MotorNormMode.RANGE_M100_100
-        
+
         motors = {}
         for name, motor_id in self.ARM_MOTORS.items():
             if name == "gripper":
                 motors[name] = Motor(motor_id, "sts3215", MotorNormMode.RANGE_0_100)
             else:
                 motors[name] = Motor(motor_id, "sts3215", norm_mode_body)
-        
+
         self.bus = FeetechMotorsBus(
             port=self.config.port,
             motors=motors,
             calibration=self.calibration,
         )
         self.cameras = make_cameras_from_configs(config.cameras)
-        
+
         self._last_gripper_pos = None
 
     @property
@@ -91,8 +91,7 @@ class SO100WithHand(Robot):
     @property
     def _cameras_ft(self) -> dict[str, tuple]:
         return {
-            cam: (self.config.cameras[cam].height, self.config.cameras[cam].width, 3)
-            for cam in self.cameras
+            cam: (self.config.cameras[cam].height, self.config.cameras[cam].width, 3) for cam in self.cameras
         }
 
     @cached_property
@@ -226,25 +225,25 @@ class SO100WithHand(Robot):
     def set_gripper_from_flex(self, flex_ratio: float) -> float:
         """
         Set gripper position based on finger flex ratio.
-        
+
         Args:
             flex_ratio: 0.0 (open) to 1.0 (closed)
-            
+
         Returns:
             The actual gripper position set
         """
         if not self.is_connected:
             raise DeviceNotConnectedError(f"{self} is not connected.")
-        
+
         flex_ratio = np.clip(flex_ratio, 0, 1)
-        
+
         gripper_pos = self.config.gripper_open_position + flex_ratio * (
             self.config.gripper_close_position - self.config.gripper_open_position
         )
-        
+
         self.bus.write("Goal_Position", "gripper", gripper_pos)
         self._last_gripper_pos = gripper_pos
-        
+
         return gripper_pos
 
     def get_gripper_position(self) -> float:

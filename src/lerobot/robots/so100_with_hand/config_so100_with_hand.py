@@ -25,18 +25,18 @@ from ..config import RobotConfig
 @dataclass
 class SO100WithHandConfig(RobotConfig):
     port: str
-    
+
     disable_torque_on_disconnect: bool = True
-    
+
     max_relative_target: int | None = None
-    
+
     cameras: dict[str, CameraConfig] = field(default_factory=dict)
-    
+
     use_degrees: bool = False
-    
+
     gripper_motor_id: int = 6
-    
+
     gripper_open_position: float = 0.0
     gripper_close_position: float = -90.0
-    
+
     sync_gripper_with_fingers: bool = True

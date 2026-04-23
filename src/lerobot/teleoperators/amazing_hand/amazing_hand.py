@@ -16,7 +16,6 @@
 
 import logging
 import time
-from typing import Any
 
 import numpy as np
 
@@ -36,16 +35,16 @@ logger = logging.getLogger(__name__)
 class AmazingHand(Teleoperator):
     """
     AmazingHand teleoperator for dexterous hand control.
-    
+
     This teleoperator reads finger positions from the AmazingHand and provides
     action data that can be used to control a gripper or another dexterous hand.
-    
+
     The hand has 4 fingers, each with 2 motors (8 motors total):
     - Index: configurable motor IDs
     - Middle: configurable motor IDs
     - Ring: configurable motor IDs
     - Thumb: configurable motor IDs
-    
+
     When sharing a serial bus with SO-ARM100 leader arm (motor IDs 1-6),
     configure finger_motor_ids to avoid conflicts, e.g.:
     {
@@ -69,29 +68,27 @@ class AmazingHand(Teleoperator):
     def __init__(self, config: AmazingHandConfig):
         super().__init__(config)
         self.config = config
-        
+
         self.finger_motor_ids = config.finger_motor_ids or self.DEFAULT_FINGER_MOTOR_IDS
-        
+
         norm_mode = MotorNormMode.DEGREES if config.use_degrees else MotorNormMode.RANGE_M100_100
-        
+
         motors = {}
         for finger_name, motor_ids in self.finger_motor_ids.items():
             for i, motor_id in enumerate(motor_ids):
-                motor_key = f"{finger_name}_{i+1}"
+                motor_key = f"{finger_name}_{i + 1}"
                 motors[motor_key] = Motor(motor_id, "scs0009", norm_mode)
-        
+
         self.bus = FeetechMotorsBus(
             port=self.config.port,
             motors=motors,
             calibration=self.calibration,
         )
-        
+
         self._motor_id_to_middle_idx = {}
-        for finger_name, motor_ids in self.finger_motor_ids.items():
-            for i, motor_id in enumerate(motor_ids):
-                sorted_ids = sorted([
-                    mid for ids in self.finger_motor_ids.values() for mid in ids
-                ])
+        for _finger_name, motor_ids in self.finger_motor_ids.items():
+            for _i, motor_id in enumerate(motor_ids):
+                sorted_ids = sorted([mid for ids in self.finger_motor_ids.values() for mid in ids])
                 self._motor_id_to_middle_idx[motor_id] = sorted_ids.index(motor_id)
 
     @property
@@ -149,7 +146,7 @@ class AmazingHand(Teleoperator):
 
         unknown_range_motors = list(self.bus.motors.keys())
         print(
-            f"Move all finger joints sequentially through their "
+            "Move all finger joints sequentially through their "
             "entire ranges of motion.\nRecording positions. Press ENTER to stop..."
         )
         range_mins, range_maxes = self.bus.record_ranges_of_motion(unknown_range_motors)
@@ -182,14 +179,14 @@ class AmazingHand(Teleoperator):
 
     def get_action(self) -> dict[str, float]:
         start = time.perf_counter()
-        
+
         positions = self.bus.sync_read("Present_Position")
-        
+
         action = {}
         for finger_name, motor_ids in self.finger_motor_ids.items():
-            motor_keys = [f"{finger_name}_{i+1}" for i in range(len(motor_ids))]
+            motor_keys = [f"{finger_name}_{i + 1}" for i in range(len(motor_ids))]
             finger_positions = [positions.get(key, 0.0) for key in motor_keys]
-            
+
             if self.config.use_degrees:
                 middle_offsets = []
                 for motor_id in motor_ids:
@@ -198,45 +195,45 @@ class AmazingHand(Teleoperator):
                         middle_offsets.append(self.config.middle_positions[idx])
                     else:
                         middle_offsets.append(0.0)
-                relative_positions = [p - o for p, o in zip(finger_positions, middle_offsets)]
+                relative_positions = [p - o for p, o in zip(finger_positions, middle_offsets, strict=True)]
             else:
                 relative_positions = finger_positions
-            
+
             flex = np.mean(relative_positions)
             action[f"{finger_name}.flex"] = float(flex)
-        
+
         avg_flex = np.mean([action[f"{fn}.flex"] for fn in self.finger_motor_ids.keys()])
-        
+
         if self.config.use_degrees:
             flex_ratio = np.clip(avg_flex / 90.0, 0, 1)
         else:
             flex_ratio = np.clip((avg_flex + 1) / 2, 0, 1)
-        
+
         gripper_pos = self.config.gripper_open_position + flex_ratio * (
             self.config.gripper_close_position - self.config.gripper_open_position
         )
         action["gripper.pos"] = float(gripper_pos)
-        
+
         dt_ms = (time.perf_counter() - start) * 1e3
         logger.debug(f"{self} read action: {dt_ms:.1f}ms")
-        
+
         return action
 
     def get_finger_positions(self) -> dict[str, list[float]]:
         positions = self.bus.sync_read("Present_Position")
-        
+
         finger_positions = {}
         for finger_name, motor_ids in self.finger_motor_ids.items():
-            motor_keys = [f"{finger_name}_{i+1}" for i in range(len(motor_ids))]
+            motor_keys = [f"{finger_name}_{i + 1}" for i in range(len(motor_ids))]
             finger_positions[finger_name] = [positions.get(key, 0.0) for key in motor_keys]
-        
+
         return finger_positions
 
     def get_average_flex_ratio(self) -> float:
         action = self.get_action()
         flex_values = [action[f"{fn}.flex"] for fn in self.finger_motor_ids.keys()]
         avg_flex = np.mean(flex_values)
-        
+
         if self.config.use_degrees:
             return float(np.clip(avg_flex / 90.0, 0, 1))
         else:

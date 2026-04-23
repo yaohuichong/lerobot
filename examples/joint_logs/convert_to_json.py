@@ -1,47 +1,52 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
-import os
-import json
+
 import codecs
+import json
+import os
+
 
 def parse_joint_data(file_path):
     """Parse joint data file, return list of data lines"""
     data_lines = []
-    with codecs.open(file_path, 'r', encoding='utf-8') as f:
+    with codecs.open(file_path, "r", encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             # Skip empty lines and comment lines
-            if not line or line.startswith('#'):
+            if not line or line.startswith("#"):
                 continue
             data_lines.append(line)
     return data_lines
 
+
 def extract_joint_values(line):
     """Extract joint values from data line"""
-    parts = line.split(',')
+    parts = line.split(",")
     if len(parts) < 8:
         return None
     return {
-        'timestamp': float(parts[0]),
-        'step': int(parts[1]),
-        'shoulder_pan': float(parts[2]),
-        'shoulder_lift': float(parts[3]),
-        'elbow_flex': float(parts[4]),
-        'wrist_flex': float(parts[5]),
-        'wrist_roll': float(parts[6]),
-        'gripper': float(parts[7])
+        "timestamp": float(parts[0]),
+        "step": int(parts[1]),
+        "shoulder_pan": float(parts[2]),
+        "shoulder_lift": float(parts[3]),
+        "elbow_flex": float(parts[4]),
+        "wrist_flex": float(parts[5]),
+        "wrist_roll": float(parts[6]),
+        "gripper": float(parts[7]),
     }
+
 
 def get_joint_values_tuple(data):
     """Get joint values tuple (for comparison)"""
     return (
-        data['shoulder_pan'],
-        data['shoulder_lift'],
-        data['elbow_flex'],
-        data['wrist_flex'],
-        data['wrist_roll'],
-        data['gripper']
+        data["shoulder_pan"],
+        data["shoulder_lift"],
+        data["elbow_flex"],
+        data["wrist_flex"],
+        data["wrist_roll"],
+        data["gripper"],
     )
+
 
 def extract_motion_segments(data_lines, static_threshold=10):
     """
@@ -96,6 +101,7 @@ def extract_motion_segments(data_lines, static_threshold=10):
 
     return motion_segments
 
+
 def process_file(input_file, output_dir):
     """Process single file"""
     # Parse data
@@ -111,12 +117,12 @@ def process_file(input_file, output_dir):
 
     # Generate output filename (replace .txt with .json)
     base_name = os.path.basename(input_file)
-    output_name = base_name.replace('.txt', '.json')
+    output_name = base_name.replace(".txt", ".json")
     output_path = os.path.join(output_dir, output_name)
 
     # Save as JSON
     json_str = json.dumps(all_motion_data, indent=2, ensure_ascii=False)
-    with codecs.open(output_path, 'w', encoding='utf-8') as f:
+    with codecs.open(output_path, "w", encoding="utf-8") as f:
         f.write(json_str)
 
     print("Processed: {}".format(base_name))
@@ -125,12 +131,13 @@ def process_file(input_file, output_dir):
     print("  Motion segments: {}".format(len(motion_segments)))
     print("  Output: {}".format(output_path))
 
+
 def main():
     # Input directory
-    input_dir = r'c:\Users\xuemu233\Desktop\lerobot\examples\joint_logs'
+    input_dir = r"c:\Users\xuemu233\Desktop\lerobot\examples\joint_logs"
 
     # Get all txt files
-    txt_files = [f for f in os.listdir(input_dir) if f.endswith('.txt')]
+    txt_files = [f for f in os.listdir(input_dir) if f.endswith(".txt")]
 
     print("Found {} txt files".format(len(txt_files)))
     print("-" * 50)
@@ -142,5 +149,6 @@ def main():
 
     print("\nAll files processed!")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
