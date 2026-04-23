@@ -65,5 +65,9 @@ def make_teleoperator_from_config(config: TeleoperatorConfig) -> Teleoperator:
         from .bi_so100_leader import BiSO100Leader
 
         return BiSO100Leader(config)
+    elif config.type == "amazing_hand":
+        from .amazing_hand import AmazingHand
+
+        return AmazingHand(config)
     else:
         raise ValueError(config.type)

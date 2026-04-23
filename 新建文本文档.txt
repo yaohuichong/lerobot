@@ -1,0 +1,302 @@
+(env_isaaclab) leju@leju-Rack-Server:~/big_disk/Byondmimic-23dof$ # 检查数据目录结构
+echo "=== 麦仁数据目录结构 ==="
+ls -lh /home/leju/big_disk/food_data/scooping_demo_mr_xx/data/
+ls -lh /home/leju/big_disk/food_data/scooping_demo_mr_xx/meta/
+
+echo -e "\n=== 排骨数据目录结构 ==="
+ls -lh /home/leju/big_disk/food_data/scooping_demo_pg_x/data/
+ls -lh /home/leju/big_disk/food_data/scooping_demo_pg_x/meta/
+
+# 检查meta文件
+echo -e "\n=== 麦仁meta信息 ==="
+cat /home/leju/big_disk/food_data/scooping_demo_mr_xx/meta/info.json 2>/dev/null || cat /home/leju/big_disk/food_data/scooping_demo_mr_xx/meta/*.json 2>/dev/null | head -20
+
+echo -e "\n=== 排骨meta信息 ==="
+cat /home/leju/big_disk/food_data/scooping_demo_pg_x/meta/info.json 2>/dev/null || cat /home/leju/big_disk/food_data/scooping_demo_pg_x/meta/*.json 2>/dev/null | head -20
+
+# 检查视频文件数量
+echo -e "\n=== 麦仁视频数量 ==="
+find /home/leju/big_disk/food_data/scooping_demo_mr_xx/videos/ -name "*.mp4" | wc -l
+
+echo -e "\n=== 排骨视频数量 ==="
+find /home/leju/big_disk/food_data/scooping_demo_pg_x/videos/ -name "*.mp4" | wc -l
+=== 麦仁数据目录结构 ===
+total 4.0K
+drwxrwxr-x 2 leju leju 4.0K Apr 11 15:25 chunk-000
+total 128K
+-rw-rw-r-- 1 leju leju 4.1K Apr 11 15:25 episodes.jsonl
+-rw-rw-r-- 1 leju leju 109K Apr 11 15:25 episodes_stats.jsonl
+-rw-rw-r-- 1 leju leju 3.2K Apr 11 15:25 info.json
+-rw-rw-r-- 1 leju leju   61 Apr 11 15:25 tasks.jsonl
+
+=== 排骨数据目录结构 ===
+total 4.0K
+drwxrwxr-x 2 leju leju 4.0K Apr 10 14:53 chunk-000
+total 124K
+-rw-rw-r-- 1 leju leju 4.1K Apr 10 14:53 episodes.jsonl
+-rw-rw-r-- 1 leju leju 106K Apr 10 14:53 episodes_stats.jsonl
+-rw-rw-r-- 1 leju leju 3.2K Apr 10 14:53 info.json
+-rw-rw-r-- 1 leju leju   61 Apr 10 14:53 tasks.jsonl
+
+=== 麦仁meta信息 ===
+{
+    "codebase_version": "v2.1",
+    "robot_type": "so101_follower",
+    "total_episodes": 50,
+    "total_frames": 16229,
+    "total_tasks": 1,
+    "total_videos": 100,
+    "total_chunks": 1,
+    "chunks_size": 1000,
+    "fps": 30,
+    "splits": {
+        "train": "0:50"
+    },
+    "data_path": "data/chunk-{episode_chunk:03d}/episode_{episode_index:06d}.parquet",
+    "video_path": "videos/chunk-{episode_chunk:03d}/{video_key}/episode_{episode_index:06d}.mp4",
+    "features": {
+        "action": {
+            "dtype": "float32",
+            "shape": [
+                6
+            ],
+            "names": [
+                "shoulder_pan.pos",
+                "shoulder_lift.pos",
+                "elbow_flex.pos",
+                "wrist_flex.pos",
+                "wrist_roll.pos",
+                "gripper.pos"
+            ]
+        },
+        "observation.state": {
+            "dtype": "float32",
+            "shape": [
+                6
+            ],
+            "names": [
+                "shoulder_pan.pos",
+                "shoulder_lift.pos",
+                "elbow_flex.pos",
+                "wrist_flex.pos",
+                "wrist_roll.pos",
+                "gripper.pos"
+            ]
+        },
+        "observation.images.handeye": {
+            "dtype": "video",
+            "shape": [
+                480,
+                640,
+                3
+            ],
+            "names": [
+                "height",
+                "width",
+                "channels"
+            ],
+            "info": {
+                "video.height": 480,
+                "video.width": 640,
+                "video.codec": "av1",
+                "video.pix_fmt": "yuv420p",
+                "video.is_depth_map": false,
+                "video.fps": 30,
+                "video.channels": 3,
+                "has_audio": false
+            }
+        },
+        "observation.images.front": {
+            "dtype": "video",
+            "shape": [
+                480,
+                640,
+                3
+            ],
+            "names": [
+                "height",
+                "width",
+                "channels"
+            ],
+            "info": {
+                "video.height": 480,
+                "video.width": 640,
+                "video.codec": "av1",
+                "video.pix_fmt": "yuv420p",
+                "video.is_depth_map": false,
+                "video.fps": 30,
+                "video.channels": 3,
+                "has_audio": false
+            }
+        },
+        "timestamp": {
+            "dtype": "float32",
+            "shape": [
+                1
+            ],
+            "names": null
+        },
+        "frame_index": {
+            "dtype": "int64",
+            "shape": [
+                1
+            ],
+            "names": null
+        },
+        "episode_index": {
+            "dtype": "int64",
+            "shape": [
+                1
+            ],
+            "names": null
+        },
+        "index": {
+            "dtype": "int64",
+            "shape": [
+                1
+            ],
+            "names": null
+        },
+        "task_index": {
+            "dtype": "int64",
+            "shape": [
+                1
+            ],
+            "names": null
+        }
+    }
+}
+=== 排骨meta信息 ===
+{
+    "codebase_version": "v2.1",
+    "robot_type": "so101_follower",
+    "total_episodes": 50,
+    "total_frames": 14076,
+    "total_tasks": 1,
+    "total_videos": 100,
+    "total_chunks": 1,
+    "chunks_size": 1000,
+    "fps": 30,
+    "splits": {
+        "train": "0:50"
+    },
+    "data_path": "data/chunk-{episode_chunk:03d}/episode_{episode_index:06d}.parquet",
+    "video_path": "videos/chunk-{episode_chunk:03d}/{video_key}/episode_{episode_index:06d}.mp4",
+    "features": {
+        "action": {
+            "dtype": "float32",
+            "shape": [
+                6
+            ],
+            "names": [
+                "shoulder_pan.pos",
+                "shoulder_lift.pos",
+                "elbow_flex.pos",
+                "wrist_flex.pos",
+                "wrist_roll.pos",
+                "gripper.pos"
+            ]
+        },
+        "observation.state": {
+            "dtype": "float32",
+            "shape": [
+                6
+            ],
+            "names": [
+                "shoulder_pan.pos",
+                "shoulder_lift.pos",
+                "elbow_flex.pos",
+                "wrist_flex.pos",
+                "wrist_roll.pos",
+                "gripper.pos"
+            ]
+        },
+        "observation.images.handeye": {
+            "dtype": "video",
+            "shape": [
+                480,
+                640,
+                3
+            ],
+            "names": [
+                "height",
+                "width",
+                "channels"
+            ],
+            "info": {
+                "video.height": 480,
+                "video.width": 640,
+                "video.codec": "av1",
+                "video.pix_fmt": "yuv420p",
+                "video.is_depth_map": false,
+                "video.fps": 30,
+                "video.channels": 3,
+                "has_audio": false
+            }
+        },
+        "observation.images.front": {
+            "dtype": "video",
+            "shape": [
+                480,
+                640,
+                3
+            ],
+            "names": [
+                "height",
+                "width",
+                "channels"
+            ],
+            "info": {
+                "video.height": 480,
+                "video.width": 640,
+                "video.codec": "av1",
+                "video.pix_fmt": "yuv420p",
+                "video.is_depth_map": false,
+                "video.fps": 30,
+                "video.channels": 3,
+                "has_audio": false
+            }
+        },
+        "timestamp": {
+            "dtype": "float32",
+            "shape": [
+                1
+            ],
+            "names": null
+        },
+        "frame_index": {
+            "dtype": "int64",
+            "shape": [
+                1
+            ],
+            "names": null
+        },
+        "episode_index": {
+            "dtype": "int64",
+            "shape": [
+                1
+            ],
+            "names": null
+        },
+        "index": {
+            "dtype": "int64",
+            "shape": [
+                1
+            ],
+            "names": null
+        },
+        "task_index": {
+            "dtype": "int64",
+            "shape": [
+                1
+            ],
+            "names": null
+        }
+    }
+}
+=== 麦仁视频数量 ===
+100
+
+=== 排骨视频数量 ===
+100
+(env_isaaclab) leju@leju-Rack-Server:~/big_disk/Byondmimic-23dof$

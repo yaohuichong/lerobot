@@ -1,0 +1,42 @@
+#!/usr/bin/env python
+
+# Copyright 2024 The HuggingFace Inc. team. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+from dataclasses import dataclass, field
+
+from lerobot.cameras import CameraConfig
+
+from ..config import RobotConfig
+
+
+@RobotConfig.register_subclass("so100_with_hand")
+@dataclass
+class SO100WithHandConfig(RobotConfig):
+    port: str
+    
+    disable_torque_on_disconnect: bool = True
+    
+    max_relative_target: int | None = None
+    
+    cameras: dict[str, CameraConfig] = field(default_factory=dict)
+    
+    use_degrees: bool = False
+    
+    gripper_motor_id: int = 6
+    
+    gripper_open_position: float = 0.0
+    gripper_close_position: float = -90.0
+    
+    sync_gripper_with_fingers: bool = True
